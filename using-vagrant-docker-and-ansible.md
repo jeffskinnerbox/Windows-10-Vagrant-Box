@@ -1,0 +1,1 @@
+/home/jeff/blogging/content/ideas/using-vagrant-docker-and-ansible.md
