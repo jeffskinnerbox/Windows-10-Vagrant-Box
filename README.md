@@ -195,7 +195,7 @@ Vagrant requires either the RDP client's `xfreerdp` or `rdesktop`
 in order to connect into the Vagrant environment.
 
 ```bash
-# install vagrant supported rdp client
+# install vagrant supported rdp client xfreerdp
 sudo apt-get -y install freerdp2-x11
 ```
 
@@ -213,7 +213,6 @@ Stefan uses this repository to generate a
 [Vagrant boxes for multiple Windows OS][23] on [Vagrant Cloud][24].
 
 We'll clone Stefan's GitHub repository,
-make our own git branch,
 and then strip-out the things we don't need for our Windows 10 Vagrant box.
 
 ```bash
@@ -222,8 +221,6 @@ cd ~/src/vagrant-machines
 
 # clone the repository
 git clone https://github.com/StefanScherer/packer-windows.git ms-windows
-
-# make a new branch for your work and make it the master
 cd ~/src/vagrant-machines/ms-windows
 
 # remove what you don't need for windows 10
@@ -262,7 +259,7 @@ version of this repository:
 # destroy the old repository, but not .gitignore
 rm -r -f .git .gitattributes
 
-# check in the changes
+# create a new repository and check in the changes
 git init
 git add --all
 git commit -m"jeffskinnerbox version of StefanScherer GitHub repository"
@@ -273,43 +270,41 @@ git commit -m"jeffskinnerbox version of StefanScherer GitHub repository"
 >The [StefanScherer GitHub repository][18] shows how to do this.
 
 >**NOTE:** Using StefanScherer's GitHub scripts,
->StefanScherer maintains a[ Windows 10 Vagant box on the HashiCorp Vagrant Cloud][22].
->If you prefer, you could use StefanScherer's instead of building your own Vagrant box.
+>StefanScherer maintains a[Windows 10 Vagant box on the HashiCorp Vagrant Cloud][22].
+>If you prefer, you could use StefanScherer's instead of building your own Vagrant box,
+>but this box doesn't have a Microsoft license.
 
 # Step 4: Download Microsoft Provided ISO File - DONE
-You'll need to place a ISO file in `~/src/vagrant-machines/ms-windows/iso`
-containing your MS Windows 10 OS,
-where the Packer build script `windows_10.json` will pick it up.
-You have two options for getting this ISO file:
+################################################################################
+* [How to Create Bootable Windows 10 image in Debian?](https://unix.stackexchange.com/questions/312488/how-to-create-bootable-windows-10-image-in-debian)
+* [How to create a Windows bootable CD with mkisofs](http://www.g-loaded.eu/2007/04/25/how-to-create-a-windows-bootable-cd-with-mkisofs/)
+* [How-To: Create ISO Images from Command-Line](http://www.tuxarena.com/static/tut_iso_cli.php)
+* [Step by Step Guide to Make ISO Images in Ubuntu](http://www.tuxarena.com/static/tut_iso_ubuntu.php)
+* [How to Make a Bootable CD/DVD/USB to Install Windows](https://www.makeuseof.com/tag/make-bootable-usb-cd-dvd-install-windows-using-iso-file/)
+################################################################################
+################################################################################
+# http://www.g-loaded.eu/2007/04/25/how-to-create-a-windows-bootable-cd-with-mkisofs/
+genisoimage -b boot/etfsboot.com -no-emul-boot -boot-load-seg 1984 -boot-load-size 4 -iso-level 2 -J -l -D -N -R -joliet-long -relaxed-filenames -V "VIRTUALBOX-CD" -o ~/src/vagrant-machines/ms-windows/iso/test-windows.iso /media/jeff/WINDOWS10/x64
 
-1. You can download an evaluation copy of Windows 10 x64 Enterprise ([here][03]).
-Ultimately, you might need a purchase a licensed version of Windows 10
-but this evaluation copy gives you 90 days of free use.
-2. I purchased a physical version of MS Windows 10 Pro
-and I had to create my own [ISO 9660 filesystem image][04].
-To do this, I used [`genisoimage`][05] & some advice from [here][06],
-a command-line tool for creating ISO file and
-burnt after to a CD or DVD using `wodim` or some other burning tool.
-3. **This is what I did:**
-Download an active Windows 10 Disc Image ([here][10]) which requires a Product Key.
-I used the product key from my purchase referenced above,
-place the Product Key information with the
-`~/src/vagrant-machines/ms-windows/answer_files/10` file as described in later steps.
+$ sha256sum iso/test-windows.iso
+bddc85d98971324821a6222d5bec1e7256f0ef4893fa0882d29e2910a7b3b162  iso/test-windows.iso
 
->**NOTE:** The conversion using `genisoimage` didn't seem to work.
->I believe its because some files were not copied over as executable, but not sure.
->The method I chose instead seemed to work fine.
+packer build --only=virtualbox-iso -var 'iso_url=./iso/test-windows.iso' -var 'iso_checksum=bddc85d98971324821a6222d5bec1e7256f0ef4893fa0882d29e2910a7b3b162' windows_10.json
+################################################################################
+################################################################################
+# https://unix.stackexchange.com/questions/312488/how-to-create-bootable-windows-10-image-in-debian
+genisoimage -no-emul-boot -b boot/etfsboot.com -boot-load-seg 0x07C0 -boot-load-size 8 -iso-level 2 -udf -joliet -R -D -N -relaxed-filenames -o iso/test-windows.iso /media/jeff/WINDOWS10/x64
 
-To create the ISO image for my MS Windows 10
-I used the following command:
+$ sha256sum iso/test-windows.iso
+437801a052e8c91425f69f39eae5b6053c1a74991eb2cd8b9819dbf32d2f077d  iso/test-windows.iso
 
+packer build --only=virtualbox-iso -var 'iso_url=./iso/test-windows.iso' -var 'iso_checksum=437801a052e8c91425f69f39eae5b6053c1a74991eb2cd8b9819dbf32d2f077d' windows_10.json
+################################################################################
+################################################################################
 ```bash
-# create iso image sutable for ms-windows from usb drive filesystem
-sudo genisoimage -J -l -R -V "Label CD" -iso-level 4 -o ~/src/vagrant-machines/ms-windows/iso/windows-10-pro-012020.iso /media/jeff/WINDOWS10/x64
-
 # generate a checksum for purchased physical version of ms windows 10 pro
 cd ~/src/vagrant-machines/ms-windows/iso
-$ sha256sum windows-10-pro-012020.iso
+$ sha256sum windows-10-pro-020120.iso
 07a055219c89f20ec5a5edf50399d09c0fbbe7c9cae173363c8f96cbb6f803e1 windows-10-pro-012020.iso
 
 # generate a checksum for downloaded evaluation copy of windows 10 x64 enterprise
@@ -322,33 +317,94 @@ cd ~/src/vagrant-machines/ms-windows/iso
 $ sha256sum Win10_1909_English_x64.iso
 01bf1eb643f7e50d0438f4f74fb91468d35cde2c82b07abc1390d47fc6a356be Win10_1909_English_x64.iso
 ```
+################################################################################
 
-# Step 5: Modify the Answewr File - DONE
+
+You'll need to place a ISO file in `~/src/vagrant-machines/ms-windows/iso`
+containing your MS Windows 10 OS,
+where the Packer build script `windows_10.json` will pick it up.
+You have three options for getting this ISO file:
+
+1. You can download an evaluation copy of Windows 10 x64 Enterprise ([here][03]).
+Ultimately, you might need a purchase a licensed version of Windows 10
+but this evaluation copy gives you 90 days of free use.
+2. **This is what I did:**
+Purchase a physical version of MS Windows 10 Pro
+and create your own [ISO 9660 filesystem image][04].
+To do this, you can use [`genisoimage`][05] & some advice from [here][06].
+`genisoimage` is a command-line tool for creating ISO file which can be
+burnt after to a CD or DVD using `wodim` or some other burning tool.
+3. Download an active Windows 10 Disc Image ([here][10]) which requires a Product Key.
+You can't use the product key from the purchase referenced above, but instead,
+purchase the product key from Microsoft.
+
+To create the ISO image for my MS Windows 10 ISO file destine for my VirtualBox vagrant box,
+I used the following command:
+```bash
+# create iso image suitable for ms-windows from the usb drive filesystem
+genisoimage -no-emul-boot -b boot/etfsboot.com -boot-load-seg 0x07C0 -boot-load-size 8 -iso-level 2 -udf -joliet -R -D -N -V "VirtualBox-CD" -relaxed-filenames -o ./iso/windows-10-pro-020120.iso /media/jeff/WINDOWS10/x64
+```
+
+Now lets checkout the newly create ISO file to make sure it is in good working order:
+
+```bash
+# create a mount point and mount the iso file
+mkdir /media/jeff/VirtualBox-CD
+sudo mount -o loop ~/src/vagrant-machines/ms-windows/iso/windows-10-pro-020120.iso /media/jeff/VirtualBox-CD
+
+# verify the mounting
+df -H
+ls -l /media/jeff/VirtualBox-CD/
+
+# to unmount the iso file
+sudo umount /media/jeff/VirtualBox-CD/
+```
+
+Create a check sum that will be used within the `packer` tool.
+
+```bash
+# generate a checksum for purchased physical version of ms windows 10 pro
+cd ~/src/vagrant-machines/ms-windows/iso
+$ sha256sum windows-10-pro-020120.iso
+5a8969afcf5c49faf3d8f7f0bddfd5517453248dec47f125a61c93f538d08625  windows-10-pro-020120.iso
+```
+
+These articles where critical to understanding how to use `genisoimage`:
+
+* [How to create a Windows bootable CD with mkisofs](http://www.g-loaded.eu/2007/04/25/how-to-create-a-windows-bootable-cd-with-mkisofs/)
+* [How to Create Bootable Windows 10 image in Debian?](https://unix.stackexchange.com/questions/312488/how-to-create-bootable-windows-10-image-in-debian)
+
+# Step 5: Modify the Answer File - DONE
 Since you need to provide a Product Key during the Packer build process,
-the `~/src/vagrant-machines/ms-windows/answer_files/10/Autounattend.xml`
-needs to be updated with the key.
-Proceedures on how to do this are with the comments of the file.
+edit the `~/src/vagrant-machines/ms-windows/answer_files/10/Autounattend.xml`
+and updated it with the key that came with your ISO file.
+Procedures on how to make these edits are within the comments of the file.
 
 # Step 6: Build the Vagrant Box Using Packer - DONE
-Now, start the build process in Packer to create a Vagrant box.
+Now, start the build process using Packer to create a Vagrant box:
 
 ```bash
 # build the vagrant box using purchased physical version of ms windows 10 pro
-packer build --only=virtualbox-iso -var 'iso_url=./iso/windows-10-pro-012020.iso' -var 'iso_checksum=07a055219c89f20ec5a5edf50399d09c0fbbe7c9cae173363c8f96cbb6f803e1' windows_10.json
+packer build --only=virtualbox-iso -var 'iso_url=./iso/windows-10-pro-020120.iso' -var 'iso_checksum=5a8969afcf5c49faf3d8f7f0bddfd5517453248dec47f125a61c93f538d08625' windows_10.json
 
-# build the vagrant box using downloaded evaluation copy of windows 10 x64 enterprise
-packer build --only=virtualbox-iso -var 'iso_url=./iso/18363.418.191007-0143.19h2_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso' -var 'iso_checksum=9ef81b6a101afd57b2dbfa44d5c8f7bc94ff45b51b82c5a1f9267ce2e63e9f53' windows_10.json
-
-# build the vagrant box using downloaded windows 10 disk image
-packer build --only=virtualbox-iso -var 'iso_url=./iso/Win10_1909_English_x64.iso' -var 'iso_checksum=01bf1eb643f7e50d0438f4f74fb91468d35cde2c82b07abc1390d47fc6a356be' windows_10.json
-
-# OR
-./build_windows_10.sh
+# OR - assuming you updated the script
+#./build_windows_10.sh
 ```
 
-Once we have the box,
-we can make it available for use by adding it to our list of available boxes.
-The follow commands ad the new box to the list of currently available boxes.
+The building of the Windows 10 OS will take several hours (its Microsoft after all).
+You'll know when the Packer build is complete when the script terminate
+and trace messages  are no long printed.
+
+>**NOTE: Early in the boot-up of the VirtualBox,
+>I get prompted for "Select the operating system you want to install"
+>and a menu from the MS Windows install script.
+>Appears there is a missing response in the
+>`~/src/vagrant-machines/ms-windows/answer_files/10` file.
+
+# Step 7: Build the Vagrant Box - DONE
+Now that `packer` has completed building the box,
+next we want to make this box available for use by adding it to our list of available boxes.
+The follow commands addsa the new box to the list of currently available boxes.
 
 ```bash
 # install the vagrant box in your local repository
@@ -368,7 +424,7 @@ by referencing it in a `Vagrantfile` for a new build.
 If you wise to remove the box from the local repository,
 use the command `vagrant box remove windows10base`.
 
-# Step 7: Test the Build
+# Step 8: Test the Build  - DONE
 Now lets test if the newly created Vagrant box in fact works.
 You can login into the VM using “vagrant” as user name and “vagrant” as a password,
 but first we need to initialize our test environment:
@@ -381,18 +437,38 @@ mkcd ~/tmp/test-windows-10
 vagrant init
 cp ~/src/vagrant-machines/ms-windows/vagrantfile-windows_10.template Vagrantfile
 
-# bring up the vm
+# may want to run this to clear out certificates
+xfreerdp /u:vagrant /p:vagrant /v:127.0.0.1:3389
+
+# bring up the vm (first issues will take long time, in typical Microsoft fashion)
 vagrant up
 
 # log into the ms windows 10 vm
 vagrant rdp
 ```
 
-**NOT TRUE >>> ITS NOT ACTIVATED!!!** **NOT TRUE >>> ITS NOT ACTIVATED!!!** **NOT TRUE >>> ITS NOT ACTIVATED!!!**
-* Check the status of the license by openning the **Settings** app and click **Update & Security**.
+>**NOTE:** When doing the `vagrant up`, you might hang on the trace message
+>"==> Windows 10 Base Box: Also, verify that the firewall is open to allow RDP connections."
+>This is most like due to an old certificates in `~/.config/freerdp/known_hosts2`.
+>You can see this clearly if you run `xfreerdp /u:vagrant /p:vagrant /v:127.0.0.1:3389`.
+>Clean out the old certificate and your should then be able to use `vagrant rdp` without problem.
+
+check that the Product Key has in fact be installed.
+Check the status of the license by openning the
+**Settings** app and click **Update & Security**.
 Open **Activation** and it should state the product is already activated.
 
-* Go into "Network" and you'll notice "File sharing is turned off...".  Click to change it
+Another method is to open a PowerShell Admin window session and enter the following commandline:
+
+```bash
+# print the product key
+wmic path softwareLicensingService get OA3xOriginalProductKey
+```
+
+>**NOTE: **NOT TRUE --- ITS NOT ACTIVATED!!!   NOT TRUE --- ITS NOT ACTIVATED!!!   NOT TRUE --- ITS NOT ACTIVATED!!!**
+
+Open a Explorer window and select **Network** and you'll notice "File sharing is turned off...".
+Click to change it.
 
 Once satisfied all is working well, run the following to clear out test environment:
 
@@ -401,15 +477,8 @@ vagrant destroy
 rm -f -r ~/tmp/test-windows-10
 ```
 
->**NOTE:** When doing the `vagrant up`, you might hang on the trace message
->"==> Windows 10 Base Box: Also, verify that the firewall is open to allow RDP connections."
->This is most like due to an old certificates in `~/.config/freerdp/known_hosts2`.
->You can see this clearly if you run `xfreerdp /u:vagrant /p:vagrant /v:127.0.0.1:3389`.
->Clean our the old certificate and your should then be able to use `vagrant rdp` without problem.
-
-# Step X:
-
 # Step X: Build Box with MS Office and Visio
+
 # Step X: Create a Vagrant Base Box from an Existing One
 https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one
 
