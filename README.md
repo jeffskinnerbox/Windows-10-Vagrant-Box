@@ -1,4 +1,14 @@
-# -- WORK IN PROGRESS -- WORK IN PROGRESS -- WORK IN PROGRESS --
+<!--
+Maintainer:   jeffskinnerbox@yahoo.com / www.jeffskinnerbox.me
+Version:      0.0.1
+-->
+
+<p style="text-align: center;">
+![work-in-progress](http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg "These materials require additional work and are not ready for general use.")
+</p>
+
+----
+
 # Vagrant Box for Windows 10
 Vagrant boxes for all the variants of Linux are plentiful since
 it is (generally) open source but a product like MS Windows is different.
