@@ -30,7 +30,7 @@ You'll need a [hypervisor][25] ([Virtualbox][01] in my case),
 I purchased mine from Microsoft but you can use an [Windows 10 evaluation version][03].
 
 The basic prerequisites in creating your Windows 10 base box are:
-install VirtualBox, Vagrant, Packer RDP client xfreerdp,
+install VirtualBox, Vagrant, Packer, RDP client xfreerdp,
 and obtain Microsoft 10 OS ISO Image.
 
 Some good sources of information are:
@@ -250,7 +250,7 @@ git add --all
 git commit -m"jeffskinnerbox version of StefanScherer GitHub repository"
 ```
 
->**NOTE:**The Packer scripts will install all Windows updates during Windows Setup.
+>**NOTE:** The Packer scripts will install all Windows updates during Windows Setup.
 >This is a very time consuming process and you might want to disable this.
 >The [StefanScherer GitHub repository][18] shows how to do this.
 
@@ -336,7 +336,7 @@ The building of the Windows 10 OS will take several hours (its Microsoft after a
 You'll know when the Packer build is complete when the script terminate
 and trace messages  are no long printed.
 
->**NOTE: Early in the boot-up of the VirtualBox,
+>**NOTE:** Early in the boot-up of the VirtualBox,
 >I get prompted for "Select the operating system you want to install"
 >and a menu from the MS Windows install script.
 >Appears there is a missing response in the
@@ -545,7 +545,7 @@ This will give you access to the Vagrant host computer filesystem.
 >`xfreerdp /u:vagrant /p:vagrant /v:127.0.0.1:3389`
 >to clear out certificates problems if vagrant rdp fails.
 
-## Step 44 Apply Product Keys - DONE
+## Step 4: Apply Product Keys - DONE
 Check the status of the license by opening the
 **Settings** app and click **Update & Security**.
 Open **Activation** and it should state the product is already activated.
@@ -585,4 +585,3 @@ but I see no purpose at this time.
 [27]:https://www.groovypost.com/howto/transfer-windows-10-license-new-pc/
 [28]:https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one
 [29]:https://docs.oracle.com/cd/E97728_01/E97727/html/vboxmanage-intro.html
-[30]:
