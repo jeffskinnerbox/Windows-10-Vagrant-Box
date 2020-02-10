@@ -1,3 +1,9 @@
+<!--
+Maintainer:   jeffskinnerbox@yahoo.com / www.jeffskinnerbox.me
+Version:      0.0.1
+-->
+
+
 # Packer shutdown_command
 There is an alternative for the normal Windows shutdown command.
 Normally we use something like this to shutdown the VM in packer.

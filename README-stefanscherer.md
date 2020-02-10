@@ -1,3 +1,9 @@
+<!--
+Maintainer:   jeffskinnerbox@yahoo.com / www.jeffskinnerbox.me
+Version:      0.0.1
+-->
+
+
 # Windows Templates for Packer
 
 [![Build status](https://ci.appveyor.com/api/projects/status/76pea1oexae5ca05?svg=true)](https://ci.appveyor.com/project/StefanScherer/packer-windows)
@@ -218,7 +224,7 @@ packer build --only=parallels-iso windows_2019_docker.json
 
 
 The Parallels builder config turns `efi boot` off in order to use the same answer file like all the other builders. If you find you need to turn `efi boot` on then make sure to adjust the appropriate answer file, especially the section regarding the partitioning of the disk.
-If you need to further customize the VM, consult the documentation at https://www.packer.io/docs/builders/parallels-iso.html. 
+If you need to further customize the VM, consult the documentation at https://www.packer.io/docs/builders/parallels-iso.html.
 
 ### Using .box Files With Vagrant
 
