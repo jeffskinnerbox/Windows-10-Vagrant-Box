@@ -446,7 +446,7 @@ To do this, I need the CD/DVD optical reader on my host computer to share with t
 
 ## Step 1: Create Your Windows 10 VM Vagrantfile - DONE
 Using the Vagrant base box we just create,
-create n VM instance for your working version of MS Windows 10.
+create a VM instance for your working version of MS Windows 10.
 
 ```bash
 # make diretory where your ms window 10 will reside
@@ -462,7 +462,7 @@ The remaining steps converts this into your working Windows 10 envirnment.
 
 ## Step 2: Access CD/DVD Reader - DONE
 To allow the VM to access the host's optical drive,
-add the following to the VagrantFile:
+add the following to the Vagrantfile:
 
 ```
    .
@@ -510,7 +510,7 @@ First thing we must do is create links to these package in our working directory
 so we can do the install.
 
 ```bash
-# symbolic link to office pro executable
+# symbolic link to office pro setup executable
 ln -s ~/src/vagrant-machines/ms-windows/iso/Setup.Def.en-US_Professional2019Retail_0d3ef3f9-ae67-4b97-a856-fff4d491ba2c_TX_PR_Platform_def_.exe setup_office_pro.exe
 
 # symbolic link to visio setup executable
