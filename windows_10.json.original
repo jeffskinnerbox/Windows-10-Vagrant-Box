@@ -1,7 +1,6 @@
 {
   "builders": [
     {
-      "accelerator": "kvm",
       "boot_wait": "6m",
       "communicator": "winrm",
       "cpus": "2",
@@ -18,22 +17,18 @@
         "./scripts/win-updates.ps1"
       ],
       "headless": true,
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": "2048",
-      "output_directory": "windows_10-qemu",
-      "qemuargs": [
-        [
-          "-drive",
-          "file=windows_10-qemu/{{ .Name }},if=virtio,cache=writeback,discard=ignore,format=qcow2,index=1"
-        ],
-        [
-          "-drive",
-          "file={{ user `virtio_win_iso` }},media=cdrom,index=3"
-        ]
-      ],
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
       "type": "qemu",
+      "accelerator": "kvm",
+      "output_directory": "windows_10-qemu",
+      "qemuargs": [
+        [ "-drive", "file=windows_10-qemu/{{ .Name }},if=virtio,cache=writeback,discard=ignore,format=qcow2,index=1" ],
+        [ "-drive", "file={{ user `virtio_win_iso` }},media=cdrom,index=3" ]
+      ],
       "vm_name": "windows_10",
       "winrm_password": "vagrant",
       "winrm_timeout": "{{user `winrm_timeout`}}",
@@ -57,7 +52,8 @@
         "./scripts/win-updates.ps1"
       ],
       "guest_additions_mode": "none",
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": "2048",
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
@@ -89,7 +85,8 @@
       ],
       "guest_os_type": "windows9-64",
       "headless": "{{user `headless`}}",
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": 2048,
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
@@ -127,7 +124,8 @@
       "guest_additions_mode": "disable",
       "guest_os_type": "Windows10_64",
       "headless": "{{user `headless`}}",
-      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_url": "{{user `iso_url`}}",
       "memory": 2048,
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
@@ -197,8 +195,8 @@
     "iso_url": "Physical Product from Microsoft",
     "restart_timeout": "5m",
     "vhv_enable": "false",
-    "virtio_win_iso": "~/virtio-win.iso",
-    "winrm_timeout": "6h"
+    "winrm_timeout": "6h",
+    "virtio_win_iso": "~/virtio-win.iso"
   }
 }
 

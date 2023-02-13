@@ -5,8 +5,14 @@ Version:      0.0.1
 
 
 <div align="center">
-<img src="http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg" title="These materials require additional work and are not ready for general use." align="center">
+<img src="https://python-deprecated.readthedocs.io/en/latest/_images/logo-full.png" title="Deprecated is increasingly used as a technical term meaning 'to recommend against using something on the grounds that it is obsolete', or 'to declare some technological feature or function to be obsolescent'.  The earliest meaning of deprecate was 'to pray against, as an evil,' and soon after this first meaning it took on the additional sense 'to express disapproval of.' Meanwhile, depreciate, the closely related word with which it is often confused, means 'to lower in value.'" align="center">
 </div>
+
+Now that multiple Vagrant boxes are available for Windows 10
+(e.g. Vagrant Cloud repository [`baunegaard/win10pro-en`][35]),
+I have no need to build my own Vagrant box.
+You can find my much easier replacement approach in my Github repository
+[`jeffskinnerbox/windows-10-pro`][36].
 
 
 ----
@@ -123,12 +129,18 @@ Prerequisites:
 2. Install RDP Client [xfreerdp](http://www.freerdp.com/)
 3. Obtain a [Windows 10 ISO file][03]
 
-## Step 1: Install the Prerequisites - DONE
+>**NOTE:** See the following for some guidance:
+>
+>* VirtualBox - ["How to Install VirtualBox 7.0 on Ubuntu 22.04"][30] and ["Fix apt-get update 'the following signatures couldn’t be verified because the public key is not available'"][31].
+>* Packer - ["Install Packer"][32] and ["`packer fix` Command"][34]
+>* RDP Client `xfreerdp` - ["Configure FreeRDP client on my Ubuntu server to access other desktops"][33]
+
+## Step 1: Install the Prerequisites
 Install VirtualBox, Vagrant, Packer, and the RDP client `xfreerdp`.
 VirtualBox and Vagrant installation are likely familiar tools but
 I'll provide install instructions for Packer and the RDP client here.
 
-### Step 1A: Installing Packer - DONE
+### Step 1A: Installing Packer
 Packer is likely to be the least fimilar of the required tools,
 so here is a short installation tutorial ([source][26]).
 Packer may be installed from a pre-compiled binary or from source.
@@ -173,7 +185,7 @@ A builder has the following three main parts.
 3. **provisioners** – Where you can integrate a shell script,
 ansible play or a chef cookbook for configuring a required application.
 
-### Step 1B: Install RDP Client - DONE
+### Step 1B: Install RDP Client
 Vagrant will not SSH into a Windows VM, but instead,
 needs to use Microsoft's Remote Desktop Protocol (RDP).
 Vagrant requires either the RDP client's `xfreerdp` or `rdesktop`
@@ -191,7 +203,7 @@ sudo apt-get -y install freerdp2-x11
 >NX (NoMachine NX / FreeNX), XDMCP (X Display Manager Control Protocol)
 >and SSH (Secure Shell / Open SSH).
 
-## Step 2: Create Packer Template for Windows 10 - DONE
+## Step 2: Create Packer Template for Windows 10
 The [Stefan Scherer][13] [packer-window GitHub repository][21]
 contains Packer templates that can be used to create a wide verity of Windows boxes for Vagrant.
 Stefan uses this repository to generate a
@@ -259,7 +271,7 @@ git commit -m"jeffskinnerbox version of StefanScherer GitHub repository"
 >If you prefer, you could use StefanScherer's instead of building your own Vagrant box,
 >but this box doesn't have a Microsoft license.
 
-## Step 4: Download Microsoft Provided ISO File - DONE
+## Step 4: Download Microsoft Provided ISO File
 You'll need to place a ISO file in `~/src/vagrant-machines/ms-windows/iso`
 containing your MS Windows 10 OS,
 where the Packer build script `windows_10.json` will pick it up.
@@ -315,13 +327,13 @@ I found these articles critical to my understanding of how to use `genisoimage`:
 * [How to create a Windows bootable CD with mkisofs](http://www.g-loaded.eu/2007/04/25/how-to-create-a-windows-bootable-cd-with-mkisofs/)
 * [How to Create Bootable Windows 10 image in Debian?](https://unix.stackexchange.com/questions/312488/how-to-create-bootable-windows-10-image-in-debian)
 
-## Step 5: Modify the Answer File - DONE
+## Step 5: Modify the Answer File
 Since you need to provide a Product Key during the Packer build process,
 edit the `~/src/vagrant-machines/ms-windows/answer_files/10/Autounattend.xml`
 and updated it with the key that came with your ISO file.
 Procedures on how to make these edits are within the comments of the file.
 
-## Step 6: Build the Vagrant Box Using Packer - DONE
+## Step 6: Build the Vagrant Box Using Packer
 Now, start the build process using Packer to create a Vagrant box:
 
 ```bash
@@ -334,7 +346,7 @@ packer build --only=virtualbox-iso -var 'iso_url=./iso/windows-10-pro-020120.iso
 
 The building of the Windows 10 OS will take several hours (its Microsoft after all).
 You'll know when the Packer build is complete when the script terminate
-and trace messages  are no long printed.
+and trace messages are no long printed.
 
 >**NOTE:** Early in the boot-up of the VirtualBox,
 >I get prompted for "Select the operating system you want to install"
@@ -342,7 +354,7 @@ and trace messages  are no long printed.
 >Appears there is a missing response in the
 >`~/src/vagrant-machines/ms-windows/answer_files/10` file.
 
-## Step 7: Build the Vagrant Box - DONE
+## Step 7: Build the Vagrant Box
 Now that `packer` has completed building the box,
 next we want to make this box available for use by adding it to our list of available boxes.
 The follow commands adds the new box to the list of currently available boxes.
@@ -365,7 +377,7 @@ by referencing it in a `Vagrantfile` for a new build.
 If you wise to remove the box from the local repository,
 use the command `vagrant box remove windows10base`.
 
-## Step 8: Test the Build  - DONE
+## Step 8: Test the Build
 Now lets test if the newly created Vagrant box in fact works.
 You can login into the VM using “vagrant” as user name and “vagrant” as a password,
 but first we need to initialize our test environment:
@@ -411,7 +423,7 @@ wmic path softwareLicensingService get OA3xOriginalProductKey
 >Check out the article ["How to Transfer your Windows 10 License to a New Computer"][27]
 >to resolve this issue.
 
-## Step 9: Access Host Filesystem - DONE
+## Step 9: Access Host Filesystem
 Within MS Windows 10,
 open a Explorer window and select **Network**
 and you'll notice "File sharing is turned off...".
@@ -444,7 +456,7 @@ Setup.Def.en-US_VisioStd2019Retail_0738b055-a809-4718-9a19-bfc2ec63bb9f_TX_PR_Pl
 My TurboTax is on a CD-ROM and I want to load that software directly from the CD.
 To do this, I need the CD/DVD optical reader on my host computer to share with the MS Windoes 10 guest VM.
 
-## Step 1: Create Your Windows 10 VM Vagrantfile - DONE
+## Step 1: Create Your Windows 10 VM Vagrantfile
 Using the Vagrant base box we just create,
 create a VM instance for your working version of MS Windows 10.
 
@@ -460,7 +472,7 @@ cp ~/src/vagrant-machines/ms-windows/vagrantfile-windows_10.template Vagrantfile
 With this, you can create an envirnment that will look like the base box.
 The remaining steps converts this into your working Windows 10 envirnment.
 
-## Step 2: Access CD/DVD Reader - DONE
+## Step 2: Access CD/DVD Reader
 To allow the VM to access the host's optical drive,
 add the following to the Vagrantfile:
 
@@ -500,7 +512,7 @@ Sources used to understand what was needed:
 * [How to add storage settings to Vagrant file?](https://stackoverflow.com/questions/21986511/how-to-add-storage-settings-to-vagrant-file)
 * [FIX FOR VBOXMANAGE: ERROR: COULD NOT FIND A CONTROLLER NAMED ‘SATA’ ERROR](https://www.minvolai.com/fix-for-vboxmanage-error-could-not-find-a-controller-named-sata-error/)
 
-## Step 3: Install Office Pro and Visio - DONE
+## Step 3: Install Office Pro and Visio
 I could use a Vagrantfile to do this install but my skills in PowerShell
 are nearly non-existent.
 Therefore, I'll be doing the old fashion manual way.
@@ -545,12 +557,12 @@ This will give you access to the Vagrant host computer filesystem.
 >`xfreerdp /u:vagrant /p:vagrant /v:127.0.0.1:3389`
 >to clear out certificates problems if vagrant rdp fails.
 
-## Step 4: Apply Product Keys - DONE
+## Step 4: Apply Product Keys
 Check the status of the license by opening the
 **Settings** app and click **Update & Security**.
 Open **Activation** and it should state the product is already activated.
 
-## Step 5: Make It Another Box - DONE
+## Step 5: Make It Another Box
 I could decide to create a new Vagrant base box from this new VM using [this method][28],
 but I see no purpose at this time.
 
@@ -585,3 +597,13 @@ but I see no purpose at this time.
 [27]:https://www.groovypost.com/howto/transfer-windows-10-license-new-pc/
 [28]:https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one
 [29]:https://docs.oracle.com/cd/E97728_01/E97727/html/vboxmanage-intro.html
+[30]:https://tecadmin.net/how-to-install-virtualbox-on-ubuntu-22-04/
+[31]:https://chrisjean.com/fix-apt-get-update-the-following-signatures-couldnt-be-verified-because-the-public-key-is-not-available/
+[32]:https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli
+[33]:https://stackoverflow.com/questions/58215340/configure-freerdp-client-on-my-ubuntu-server-to-access-other-desktops
+[34]:https://developer.hashicorp.com/packer/docs/commands/fix
+[35]:https://app.vagrantup.com/baunegaard/boxes/win10pro-en/versions/1.4.0
+[36]:https://github.com/jeffskinnerbox/windows-10-pro
+[37]:
+[38]:
+
